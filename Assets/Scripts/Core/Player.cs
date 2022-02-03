@@ -6,8 +6,9 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
     float SpeedShip;
-    float ChangeSpeed = 0.25f;
+    float ChangeSpeed = 0.05f;
     Vector2 vertical = Vector2.zero;
+    Vector2 newPos;
     PlayerControls controls;
 
     void Awake()
@@ -20,24 +21,36 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        SpeedShip = Mathf.Clamp(SpeedShip, .3f, 3f);
+        
     }
 
   
 
      void Movement()
     {
-        Vector2 currentPosition = gameObject.transform.position;
-        SpeedShip += Time.fixedDeltaTime * ChangeSpeed;
-        Vector2 newPos = currentPosition + (vertical * SpeedShip);
+        Vector2 currentPosition = new Vector2(Mathf.Abs(gameObject.transform.position.x), Mathf.Abs(gameObject.transform.position.y));
+        SpeedShip = Mathf.Clamp(SpeedShip + ChangeSpeed, 0f, 3f);
+        newPos = currentPosition + (vertical * SpeedShip);
         transform.Translate(newPos * Time.fixedDeltaTime);
 
+
+    }
+
+    public void RotateTowardDirection()
+    {
         
     }
-    
+
     private void FixedUpdate()
     {
         Movement();
+        if(vertical.magnitude < 0.1f)
+        {
+            newPos = vertical * SpeedShip;
+        }
+
+        
+
     }
 
 
