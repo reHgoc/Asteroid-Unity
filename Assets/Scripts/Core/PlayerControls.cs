@@ -133,7 +133,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""LeftRot"",
+                    ""name"": ""Rotation"",
                     ""id"": ""79da1245-5cee-4ed0-a108-d87cd5f2b316"",
                     ""path"": ""2DVector"",
                     ""interactions"": """",

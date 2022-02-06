@@ -5,9 +5,14 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
+    
+
     float SpeedShip;
     float ChangeSpeed = 0.05f;
+    float rotSpeed = 20f;
     Vector2 vertical = Vector2.zero;
+    Vector2 rot = Vector2.zero;
+    Vector2 newRot;
     Vector2 newPos;
     PlayerControls controls;
 
@@ -16,11 +21,16 @@ public class Player : MonoBehaviour
         controls = new PlayerControls();
 
         controls.Player.Move.performed += context => vertical = context.ReadValue<Vector2>();
-        controls.Player.Move.canceled += context => vertical = Vector2.zero;
+        controls.Player.Look.performed += cntx    => rot      = cntx.ReadValue<Vector2>();
+        controls.Player.Look.canceled  += cntx    => rot      = Vector2.zero;
+        controls.Player.Move.canceled  += context => vertical = newPos;
+
+      
     }
 
-    private void Start()
+     void Start()
     {
+       
         
     }
 
@@ -28,27 +38,30 @@ public class Player : MonoBehaviour
 
      void Movement()
     {
-        Vector2 currentPosition = new Vector2(Mathf.Abs(gameObject.transform.position.x), Mathf.Abs(gameObject.transform.position.y));
-        SpeedShip = Mathf.Clamp(SpeedShip + ChangeSpeed, 0f, 3f);
-        newPos = currentPosition + (vertical * SpeedShip);
+        SpeedShip = Mathf.Clamp((SpeedShip + ChangeSpeed) * Time.fixedDeltaTime, 0.3f, 3f);
+        newPos = vertical * SpeedShip;
         transform.Translate(newPos * Time.fixedDeltaTime);
-
 
     }
 
-    public void RotateTowardDirection()
+    public void Rotate()
     {
-        
+
+        // float angle = Mathf.Atan2(rot.y, rot.x) * Mathf.Rad2Deg;
+        // transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle + rot.x)).normalized;
+        this.transform.Rotate(new Vector3(0f,0f, (rot.x * rotSpeed) * -1f)  * Time.fixedDeltaTime);
+        print(rot);
     }
 
     private void FixedUpdate()
     {
         Movement();
-        if(vertical.magnitude < 0.1f)
+        
+        if(rot.magnitude != 0f)
         {
-            newPos = vertical * SpeedShip;
+            Rotate();
+            
         }
-
         
 
     }
