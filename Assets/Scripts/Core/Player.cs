@@ -3,21 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Player : MonoBehaviour
+public class Player : AIManager
 {
-    
-
-    float SpeedShip;
-    float ChangeSpeed = 0.05f;
-    float rotSpeed = 20f;
-
-    Vector2 vertical = Vector2.zero;
-    Vector2 rot = Vector2.zero;
-    Vector2 newPos;
-
-    Transform firePoint;
 
     PlayerControls controls;
+    Laser laser;
 
     void Awake()
     {
@@ -26,7 +16,7 @@ public class Player : MonoBehaviour
         controls.Player.Move.performed    += context => vertical = context.ReadValue<Vector2>();
         controls.Player.Look.performed    += cntx    => rot      = cntx.ReadValue<Vector2>();
         controls.Player.Look.canceled     += cntx    => rot      = Vector2.zero;
-        controls.Player.Move.canceled     += context => vertical = newPos;
+        controls.Player.Move.canceled     += context => vertical = transform.position += Vector3.forward * SpeedShip * Time.deltaTime;
         controls.Player.Fire.performed    += context => Fire();
         controls.Player.AltFire.performed += context => AltFire();
         
@@ -38,14 +28,14 @@ public class Player : MonoBehaviour
     {
 
         firePoint = transform.Find("FirePoint");
-
+        
     }
 
   
 
      void Movement()
     {
-        SpeedShip = Mathf.Clamp((SpeedShip + ChangeSpeed) * Time.fixedDeltaTime, 0.3f, 3f);
+        SpeedShip = Mathf.Clamp((SpeedShip + ChangeSpeed) * Time.fixedDeltaTime, 0.7f, 7f);
         newPos = vertical * SpeedShip;
         transform.Translate(newPos * Time.fixedDeltaTime);
 
@@ -69,9 +59,10 @@ public class Player : MonoBehaviour
 
     public void AltFire()
     {
-        var resourceLaser = Resources.Load("Prefabs/Laser");
-        GameObject laser = Instantiate(resourceLaser, firePoint.position, firePoint.rotation) as GameObject;
-        laser.GetComponent<Laser>().StartCoroutine(laser.GetComponent<Laser>().LaserShoot());
+        laser.lineRenderer.SetPosition(0, firePoint.position);
+        laser.lineRenderer.SetPosition(0, new Vector3(0f,15f,0f));
+        laser.StartCoroutine(laser.LaserShoot());
+        
         //print("AltFire");
 
     }
